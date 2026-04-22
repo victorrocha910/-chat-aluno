@@ -24,7 +24,7 @@ app.use(session({
 }))
 
 app.get('/login', function(req, res) {
-    let html = fs.readFileSync('./views/login.html', 'utf8')
+    let html = fs.readFileSync(path.join(__dirname, 'views/login.html'), 'utf8')
     res.send(html)
 })
 
@@ -42,7 +42,7 @@ app.post('/login', function(req, res) {
 
         res.redirect('/menu')
     } else {
-        let html = fs.readFileSync('./views/login.html', 'utf8')
+        let html = fs.readFileSync(path.join(__dirname, 'views/login.html'), 'utf8')
         html = html.replace('<!-- ERRO -->', '<p style="color:red">Usuário ou senha incorretos!</p>')
         res.send(html)
     }
@@ -54,12 +54,9 @@ app.get('/menu', function(req, res) {
         return
     }
 
-    let ultimoAcesso = req.cookies.ultimoAcesso
-    if (!ultimoAcesso) {
-        ultimoAcesso = 'Primeiro acesso'
-    }
+    let ultimoAcesso = req.cookies.ultimoAcesso || 'Primeiro acesso'
 
-    let html = fs.readFileSync('./views/menu.html', 'utf8')
+    let html = fs.readFileSync(path.join(__dirname, 'views/menu.html'), 'utf8')
     html = html.replace('<!-- ULTIMO_ACESSO -->', ultimoAcesso)
     res.send(html)
 })
@@ -70,7 +67,7 @@ app.get('/cadastroUsuario.html', function(req, res) {
         return
     }
 
-    let html = fs.readFileSync('./views/cadastroUsuario.html', 'utf8')
+    let html = fs.readFileSync(path.join(__dirname, 'views/cadastroUsuario.html'), 'utf8')
     res.send(html)
 })
 
@@ -87,21 +84,13 @@ app.post('/cadastrarUsuario', function(req, res) {
 
     let erros = ''
 
-    if (!nome || nome.trim() == '') {
-        erros += '<li>Nome é obrigatório</li>'
-    }
-    if (!dataNasc || dataNasc.trim() == '') {
-        erros += '<li>Data de nascimento é obrigatória</li>'
-    }
-    if (!apelido || apelido.trim() == '') {
-        erros += '<li>Apelido é obrigatório</li>'
-    }
-    if (!assunto || assunto == '') {
-        erros += '<li>Escolha um assunto</li>'
-    }
+    if (!nome || nome.trim() == '') erros += '<li>Nome é obrigatório</li>'
+    if (!dataNasc || dataNasc.trim() == '') erros += '<li>Data de nascimento é obrigatória</li>'
+    if (!apelido || apelido.trim() == '') erros += '<li>Apelido é obrigatório</li>'
+    if (!assunto || assunto == '') erros += '<li>Escolha um assunto</li>'
 
     if (erros != '') {
-        let html = fs.readFileSync('./views/cadastroUsuario.html', 'utf8')
+        let html = fs.readFileSync(path.join(__dirname, 'views/cadastroUsuario.html'), 'utf8')
         html = html.replace('<!-- ERROS -->', '<ul style="color:red">' + erros + '</ul>')
         res.send(html)
         return
@@ -113,20 +102,20 @@ app.post('/cadastrarUsuario', function(req, res) {
         apelido: apelido.trim(),
         assunto: assunto
     }
+
     usuarios.push(novoUsuario)
 
     let linhasTabela = ''
-    for (let i = 0; i < usuarios.length; i++) {
-        let u = usuarios[i]
-        linhasTabela += '<tr>'
-        linhasTabela += '<td>' + u.nome + '</td>'
-        linhasTabela += '<td>' + u.dataNasc + '</td>'
-        linhasTabela += '<td>' + u.apelido + '</td>'
-        linhasTabela += '<td>' + u.assunto + '</td>'
-        linhasTabela += '</tr>'
+    for (let u of usuarios) {
+        linhasTabela += `<tr>
+            <td>${u.nome}</td>
+            <td>${u.dataNasc}</td>
+            <td>${u.apelido}</td>
+            <td>${u.assunto}</td>
+        </tr>`
     }
 
-    let html = fs.readFileSync('./views/listaUsuarios.html', 'utf8')
+    let html = fs.readFileSync(path.join(__dirname, 'views/listaUsuarios.html'), 'utf8')
     html = html.replace('<!-- LINHAS_TABELA -->', linhasTabela)
     res.send(html)
 })
@@ -140,7 +129,7 @@ app.get('/batepapo', function(req, res) {
     let assuntoEscolhido = req.query.assunto
 
     if (!assuntoEscolhido) {
-        let html = fs.readFileSync('./views/batepapo.html', 'utf8')
+        let html = fs.readFileSync(path.join(__dirname, 'views/batepapo.html'), 'utf8')
         html = html.replace('<!-- MENSAGENS -->', '')
         html = html.replace('<!-- FORM_MENSAGEM -->', '')
         html = html.replace('<!-- ERRO_CHAT -->', '')
@@ -149,16 +138,17 @@ app.get('/batepapo', function(req, res) {
     }
 
     let msgDoAssunto = ''
-    for (let i = 0; i < mensagens.length; i++) {
-        let m = mensagens[i]
+
+    for (let m of mensagens) {
         if (m.assunto == assuntoEscolhido) {
-            msgDoAssunto += '<div class="msg-box">'
-            msgDoAssunto += '<span class="msg-de">' + m.de + '</span>'
-            msgDoAssunto += ' <span class="msg-seta">→</span> '
-            msgDoAssunto += '<span class="msg-para">' + m.para + '</span>'
-            msgDoAssunto += '<span class="msg-hora"> [' + m.hora + ']</span>'
-            msgDoAssunto += '<p class="msg-texto">' + m.texto + '</p>'
-            msgDoAssunto += '</div>'
+            msgDoAssunto += `
+            <div class="msg-box">
+                <span class="msg-de">${m.de}</span>
+                <span class="msg-seta">→</span>
+                <span class="msg-para">${m.para}</span>
+                <span class="msg-hora"> [${m.hora}]</span>
+                <p class="msg-texto">${m.texto}</p>
+            </div>`
         }
     }
 
@@ -167,10 +157,10 @@ app.get('/batepapo', function(req, res) {
     }
 
     let opcoesUsuarios = '<option value="">Selecione um usuário...</option>'
-    for (let i = 0; i < usuarios.length; i++) {
-        let u = usuarios[i]
+
+    for (let u of usuarios) {
         if (u.assunto == assuntoEscolhido) {
-            opcoesUsuarios += '<option value="' + u.apelido + '">' + u.apelido + ' (' + u.nome + ')</option>'
+            opcoesUsuarios += `<option value="${u.apelido}">${u.apelido} (${u.nome})</option>`
         }
     }
 
@@ -182,7 +172,7 @@ app.get('/batepapo', function(req, res) {
                 <label>Para:</label><br>
                 <select name="para">${opcoesUsuarios}</select><br><br>
                 <label>Mensagem:</label><br>
-                <textarea name="texto" rows="3" placeholder="Digite sua mensagem..."></textarea><br><br>
+                <textarea name="texto" rows="3"></textarea><br><br>
                 <button type="submit">Enviar</button>
             </form>
         </div>
@@ -191,16 +181,12 @@ app.get('/batepapo', function(req, res) {
     let erroChat = req.session.erroChat || ''
     req.session.erroChat = ''
 
-    let erroHtml = ''
-    if (erroChat != '') {
-        erroHtml = '<p style="color:red">' + erroChat + '</p>'
-    }
+    let erroHtml = erroChat ? `<p style="color:red">${erroChat}</p>` : ''
 
-    let html = fs.readFileSync('./views/batepapo.html', 'utf8')
-    html = html.replace('<!-- MENSAGENS -->', '<h3>Mensagens - ' + assuntoEscolhido + '</h3>' + msgDoAssunto)
+    let html = fs.readFileSync(path.join(__dirname, 'views/batepapo.html'), 'utf8')
+    html = html.replace('<!-- MENSAGENS -->', `<h3>Mensagens - ${assuntoEscolhido}</h3>` + msgDoAssunto)
     html = html.replace('<!-- FORM_MENSAGEM -->', formMsg)
     html = html.replace('<!-- ERRO_CHAT -->', erroHtml)
-    html = html.replace('value="' + assuntoEscolhido + '"', 'value="' + assuntoEscolhido + '" selected')
 
     res.send(html)
 })
@@ -215,7 +201,7 @@ app.post('/postarMensagem', function(req, res) {
     let para = req.body.para
     let texto = req.body.texto
 
-    if (!para || para == '') {
+    if (!para) {
         req.session.erroChat = 'Você precisa selecionar um usuário!'
         res.redirect('/batepapo?assunto=' + assunto)
         return
@@ -230,14 +216,13 @@ app.post('/postarMensagem', function(req, res) {
     let agora = new Date()
     let hora = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR')
 
-    let novaMensagem = {
-        assunto: assunto,
-        de: 'Admin',
-        para: para,
+    mensagens.push({
+        assunto,
+        de: req.session.usuario,
+        para,
         texto: texto.trim(),
-        hora: hora
-    }
-    mensagens.push(novaMensagem)
+        hora
+    })
 
     res.redirect('/batepapo?assunto=' + assunto)
 })
@@ -252,9 +237,5 @@ app.get('/', function(req, res) {
 })
 
 app.listen(3000, function() {
-    console.log('=================================')
-    console.log('Acesse: http://localhost:3000')
-    console.log('Usuario: admin')
-    console.log('Senha: 1234')
-    console.log('=================================')
+    console.log('Servidor rodando em http://localhost:3000')
 })
