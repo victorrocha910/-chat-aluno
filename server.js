@@ -16,6 +16,10 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static('public'))
 
+app.get('/style.css', function(req, res) {
+    res.sendFile(path.join(__dirname, 'public/style.css'))
+})
+
 app.use(session({
     secret: 'minha-chave-secreta-123',
     resave: false,
