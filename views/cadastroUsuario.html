@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Usuário</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="caixa-central">
+    <h2>Cadastro de Usuário</h2>
+
+    <!-- ERROS -->
+
+    <form method="POST" action="/cadastrarUsuario">
+
+        <label>Nome:</label><br>
+        <input type="text" name="nome" placeholder="Nome completo"><br><br>
+
+        <label>Data de Nascimento:</label><br>
+        <input type="date" name="dataNasc"><br><br>
+
+        <label>Apelido (Nickname):</label><br>
+        <input type="text" name="apelido" placeholder="Ex: joao99"><br><br>
+
+        <label>Assunto Preferido:</label><br>
+        <select name="assunto">
+            <option value="">Selecione...</option>
+            <option value="Futebol">Futebol</option>
+            <option value="Games">Games</option>
+            <option value="Carros">Carros</option>
+            <option value="Música">Música</option>
+            <option value="Tecnologia">Tecnologia</option>
+            <option value="Cinema">Cinema</option>
+        </select><br><br>
+
+        <button type="submit">Cadastrar</button>
+        <a href="/menu">Voltar ao Menu</a>
+    </form>
+</div>
+
+</body>
+</html>

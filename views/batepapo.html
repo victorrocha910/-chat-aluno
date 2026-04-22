@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Bate-papo</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="caixa-central" style="max-width: 750px;">
+    <h2>💬 Bate-papo</h2>
+
+    
+    <form method="GET" action="/batepapo">
+        <label>Escolha um assunto:</label>
+        <select name="assunto" onchange="this.form.submit()">
+            <option value="">Selecione...</option>
+            <option value="Futebol">Futebol</option>
+            <option value="Games">Games</option>
+            <option value="Carros">Carros</option>
+            <option value="Música">Música</option>
+            <option value="Tecnologia">Tecnologia</option>
+            <option value="Cinema">Cinema</option>
+        </select>
+    </form>
+
+    <br>
+
+    <!-- ERRO_CHAT -->
+
+    <!-- MENSAGENS -->
+
+    <br>
+
+    <!-- FORM_MENSAGEM -->
+
+    <br>
+    <a href="/menu">Voltar ao Menu</a>
+</div>
+
+</body>
+</html>
