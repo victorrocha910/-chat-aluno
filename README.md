@@ -8,6 +8,7 @@ Aplicação em Node.js e Express com login, cadastro de usuários (sem senha) e 
 Como executar
 
 npm install
+
 node server.js
 
 Acesse: http://localhost:3000/login
